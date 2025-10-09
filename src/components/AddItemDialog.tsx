@@ -15,6 +15,7 @@ const itemSchema = z.object({
   category: z.string().min(1, "Please select a category"),
   location: z.string().min(3, "Location must be at least 3 characters").max(100),
   contact_info: z.string().min(5, "Contact info must be at least 5 characters").max(100),
+  image_url: z.string().url("Must be a valid URL").optional().or(z.literal("")),
 });
 
 interface AddItemDialogProps {
@@ -24,9 +25,22 @@ interface AddItemDialogProps {
   userId: string;
 }
 
-const categories = ["Electronics", "Clothing", "Accessories", "Books", "Keys", "Wallet", "Other"];
+const categories = [
+  "Electronics",
+  "Clothing",
+  "Accessories",
+  "Books",
+  "Keys",
+  "Wallet",
+  "Other",
+];
 
-export default function AddItemDialog({ open, onOpenChange, type, userId }: AddItemDialogProps) {
+export default function AddItemDialog({
+  open,
+  onOpenChange,
+  type,
+  userId,
+}: AddItemDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -35,6 +49,7 @@ export default function AddItemDialog({ open, onOpenChange, type, userId }: AddI
     location: "",
     date: new Date().toISOString().split("T")[0],
     contact_info: "",
+    image_url: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,31 +57,37 @@ export default function AddItemDialog({ open, onOpenChange, type, userId }: AddI
     setIsLoading(true);
 
     try {
+      // ✅ Validate form with Zod
       itemSchema.parse(formData);
 
-      const insertData: any = {
+      const insertData = {
         user_id: userId,
-        title: formData.title,
-        description: formData.description,
+        title: formData.title.trim(),
+        description: formData.description.trim(),
         category: formData.category,
-        location: formData.location,
-        contact_info: formData.contact_info,
+        location: formData.location.trim(),
+        contact_info: formData.contact_info.trim(),
         status: "active",
+        image_url: formData.image_url || null,
       };
 
+      // ✅ Assign correct date field name depending on type
       if (type === "lost") {
-        insertData.date_lost = formData.date;
+        Object.assign(insertData, { date_lost: formData.date });
       } else {
-        insertData.date_found = formData.date;
+        Object.assign(insertData, { date_found: formData.date });
       }
 
       const table = type === "lost" ? "lost_items" : "found_items";
+
       const { error } = await supabase.from(table).insert(insertData);
 
       if (error) throw error;
 
       toast.success(`${type === "lost" ? "Lost" : "Found"} item added successfully!`);
       onOpenChange(false);
+
+      // ✅ Reset form without reloading
       setFormData({
         title: "",
         description: "",
@@ -74,8 +95,11 @@ export default function AddItemDialog({ open, onOpenChange, type, userId }: AddI
         location: "",
         date: new Date().toISOString().split("T")[0],
         contact_info: "",
+        image_url: "",
       });
-      window.location.reload();
+
+      // Optionally, trigger refresh event for parent if needed
+      window.dispatchEvent(new Event("item-added"));
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error(error.errors[0].message);
@@ -93,6 +117,7 @@ export default function AddItemDialog({ open, onOpenChange, type, userId }: AddI
         <DialogHeader>
           <DialogTitle>Add {type === "lost" ? "Lost" : "Found"} Item</DialogTitle>
         </DialogHeader>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Item Title</Label>
@@ -111,7 +136,9 @@ export default function AddItemDialog({ open, onOpenChange, type, userId }: AddI
               id="description"
               placeholder="Provide details about the item..."
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               required
             />
           </div>
@@ -120,7 +147,9 @@ export default function AddItemDialog({ open, onOpenChange, type, userId }: AddI
             <Label htmlFor="category">Category</Label>
             <Select
               value={formData.category}
-              onValueChange={(value) => setFormData({ ...formData, category: value })}
+              onValueChange={(value) =>
+                setFormData({ ...formData, category: value })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
@@ -141,7 +170,9 @@ export default function AddItemDialog({ open, onOpenChange, type, userId }: AddI
               id="location"
               placeholder="e.g., Library Building"
               value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, location: e.target.value })
+              }
               required
             />
           </div>
@@ -152,7 +183,9 @@ export default function AddItemDialog({ open, onOpenChange, type, userId }: AddI
               id="date"
               type="date"
               value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, date: e.target.value })
+              }
               required
             />
           </div>
@@ -163,8 +196,22 @@ export default function AddItemDialog({ open, onOpenChange, type, userId }: AddI
               id="contact"
               placeholder="Phone or email"
               value={formData.contact_info}
-              onChange={(e) => setFormData({ ...formData, contact_info: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, contact_info: e.target.value })
+              }
               required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="image_url">Image URL (optional)</Label>
+            <Input
+              id="image_url"
+              placeholder="https://example.com/image.jpg"
+              value={formData.image_url}
+              onChange={(e) =>
+                setFormData({ ...formData, image_url: e.target.value })
+              }
             />
           </div>
 
