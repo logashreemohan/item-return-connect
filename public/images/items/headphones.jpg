@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#000000"/>
+  <circle cx="140" cy="150" r="40" fill="#404040"/>
+  <circle cx="260" cy="150" r="40" fill="#404040"/>
+  <rect x="110" y="130" width="20" height="40" rx="10" fill="#606060"/>
+  <rect x="270" y="130" width="20" height="40" rx="10" fill="#606060"/>
+  <text x="200" y="40" text-anchor="middle" font-family="Arial" font-size="20" fill="white">Lost: Wireless Headphones</text>
+</svg>

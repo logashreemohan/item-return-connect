@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#22c55e"/>
+  <rect x="180" y="80" width="40" height="140" rx="20" fill="#bbf7d0"/>
+  <circle cx="200" cy="90" r="15" fill="#4ade80"/>
+  <text x="200" y="40" text-anchor="middle" font-family="Arial" font-size="20" fill="white">Found: Water Bottle</text>
+</svg>

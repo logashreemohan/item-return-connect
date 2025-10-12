@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#f97316"/>
+  <rect x="120" y="90" width="30" height="120" fill="#fdba74"/>
+  <rect x="160" y="100" width="30" height="110" fill="#fdba74"/>
+  <rect x="200" y="110" width="30" height="100" fill="#fdba74"/>
+  <text x="200" y="40" text-anchor="middle" font-family="Arial" font-size="20" fill="white">Lost: Textbook Set</text>
+</svg>

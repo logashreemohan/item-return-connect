@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#f59e0b"/>
+  <rect x="130" y="100" width="140" height="100" fill="#fde68a"/>
+  <rect x="140" y="110" width="120" height="15" fill="#fbbf24"/>
+  <rect x="140" y="130" width="120" height="15" fill="#fbbf24"/>
+  <rect x="140" y="150" width="120" height="15" fill="#fbbf24"/>
+  <rect x="140" y="170" width="120" height="15" fill="#fbbf24"/>
+  <text x="200" y="40" text-anchor="middle" font-family="Arial" font-size="20" fill="white">Found: Calculus Textbook</text>
+</svg>

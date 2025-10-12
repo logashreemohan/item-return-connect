@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#3b82f6"/>
+  <path d="M150,100 L250,100 L270,150 L250,200 L150,200 L130,150 Z" fill="#93c5fd"/>
+  <circle cx="170" cy="140" r="5" fill="#60a5fa"/>
+  <circle cx="230" cy="140" r="5" fill="#60a5fa"/>
+  <text x="200" y="40" text-anchor="middle" font-family="Arial" font-size="20" fill="white">Lost: Jacket</text>
+</svg>

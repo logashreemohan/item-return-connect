@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { z } from "zod";
@@ -34,14 +33,19 @@ export default function Contact() {
     try {
       contactSchema.parse(formData);
 
-      const { error } = await supabase.from("contact_messages").insert({
+      // Store contact message in localStorage instead of Supabase
+      const contactMessage = {
+        id: Math.random().toString(36).substr(2, 9),
         name: formData.name,
         email: formData.email,
         subject: formData.subject,
         message: formData.message,
-      });
+        created_at: new Date().toISOString(),
+      };
 
-      if (error) throw error;
+      const existingMessages = JSON.parse(localStorage.getItem("contactMessages") || "[]");
+      existingMessages.push(contactMessage);
+      localStorage.setItem("contactMessages", JSON.stringify(existingMessages));
 
       toast.success("Message sent successfully!");
       setFormData({ name: "", email: "", subject: "", message: "" });

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#94a3b8"/>
+  <circle cx="200" cy="150" r="40" fill="#e2e8f0"/>
+  <circle cx="200" cy="150" r="20" fill="#cbd5e1"/>
+  <rect x="195" y="100" width="10" height="30" fill="#94a3b8"/>
+  <text x="200" y="40" text-anchor="middle" font-family="Arial" font-size="20" fill="white">Found: Keychain</text>
+</svg>

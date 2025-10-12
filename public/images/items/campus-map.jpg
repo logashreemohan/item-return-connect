@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#8b5cf6"/>
+  <rect x="120" y="100" width="160" height="100" fill="#ddd6fe"/>
+  <line x1="120" y1="120" x2="280" y2="120" stroke="#a78bfa" stroke-width="2"/>
+  <line x1="120" y1="140" x2="280" y2="140" stroke="#a78bfa" stroke-width="2"/>
+  <line x1="120" y1="160" x2="280" y2="160" stroke="#a78bfa" stroke-width="2"/>
+  <line x1="120" y1="180" x2="280" y2="180" stroke="#a78bfa" stroke-width="2"/>
+  <line x1="150" y1="100" x2="150" y2="200" stroke="#a78bfa" stroke-width="2"/>
+  <line x1="180" y1="100" x2="180" y2="200" stroke="#a78bfa" stroke-width="2"/>
+  <line x1="210" y1="100" x2="210" y2="200" stroke="#a78bfa" stroke-width="2"/>
+  <line x1="240" y1="100" x2="240" y2="200" stroke="#a78bfa" stroke-width="2"/>
+  <text x="200" y="40" text-anchor="middle" font-family="Arial" font-size="20" fill="white">Found: Campus Map</text>
+</svg>

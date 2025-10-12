@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,28 +17,33 @@ const authSchema = z.object({
 export default function Auth() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Login state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+
+  // Signup state
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [fullName, setFullName] = useState("");
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate("/dashboard");
+    // Check if user is already logged in
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const parsedUser = JSON.parse(user);
+        if (parsedUser && parsedUser.id) {
+          navigate("/dashboard");
+        }
+      } catch (e) {
+        // If there's an error parsing, remove the invalid user data
+        localStorage.removeItem("user");
       }
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/dashboard");
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    }
   }, [navigate]);
 
+  // LOGIN
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -47,29 +51,35 @@ export default function Auth() {
     try {
       authSchema.parse({ email: loginEmail, password: loginPassword });
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
-        password: loginPassword,
-      });
-
-      if (error) {
-        if (error.message.includes("Invalid login credentials")) {
-          toast.error("Invalid email or password");
-        } else {
-          toast.error(error.message);
-        }
-      } else {
+      // Simulate login with localStorage
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
+      if (users[loginEmail] && users[loginEmail].password === loginPassword) {
+        const user = {
+          id: loginEmail,
+          email: loginEmail,
+          full_name: users[loginEmail].full_name
+        };
+        localStorage.setItem("user", JSON.stringify(user));
         toast.success("Logged in successfully!");
+        // Force a small delay to ensure localStorage is updated
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 100);
+      } else {
+        toast.error("Invalid email or password");
       }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        toast.error(error.errors[0].message);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        toast.error(err.errors[0].message);
+      } else {
+        toast.error("An error occurred during login");
       }
     } finally {
       setIsLoading(false);
     }
   };
 
+  // SIGNUP
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -77,29 +87,36 @@ export default function Auth() {
     try {
       authSchema.parse({ email: signupEmail, password: signupPassword, fullName });
 
-      const { error } = await supabase.auth.signUp({
-        email: signupEmail,
-        password: signupPassword,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-          data: {
-            full_name: fullName,
-          },
-        },
-      });
-
-      if (error) {
-        if (error.message.includes("User already registered")) {
-          toast.error("An account with this email already exists");
-        } else {
-          toast.error(error.message);
-        }
+      // Simulate signup with localStorage
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
+      
+      if (users[signupEmail]) {
+        toast.error("An account with this email already exists");
       } else {
+        users[signupEmail] = {
+          password: signupPassword,
+          full_name: fullName
+        };
+        localStorage.setItem("users", JSON.stringify(users));
         toast.success("Account created successfully!");
+        
+        // Automatically log in the user
+        const user = {
+          id: signupEmail,
+          email: signupEmail,
+          full_name: fullName
+        };
+        localStorage.setItem("user", JSON.stringify(user));
+        // Force a small delay to ensure localStorage is updated
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 100);
       }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        toast.error(error.errors[0].message);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        toast.error(err.errors[0].message);
+      } else {
+        toast.error("An error occurred during signup");
       }
     } finally {
       setIsLoading(false);
@@ -119,6 +136,8 @@ export default function Auth() {
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
+
+            {/* LOGIN TAB */}
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
@@ -147,6 +166,8 @@ export default function Auth() {
                 </Button>
               </form>
             </TabsContent>
+
+            {/* SIGNUP TAB */}
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-4">
                 <div className="space-y-2">
