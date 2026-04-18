@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { loginUser } from '@/lib/auth';
 
 interface LoginProps {
   onLogin: (user: { name: string; email: string }) => void;
@@ -18,31 +19,36 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!email || !password) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all fields",
+        description: "Please fill in all fields.",
         variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
-    
-    // Simulate login
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // For demo purposes, accept any email/password
-    onLogin({ 
-      name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1), 
-      email 
-    });
-    
+
+    const result = await loginUser(email, password);
+
+    if (!result.success) {
+      toast({
+        title: "Login Failed",
+        description: result.error || "Invalid credentials.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     toast({
       title: "Welcome back!",
-      description: "You've successfully logged in.",
+      description: `Signed in as ${result.user!.name}.`,
     });
-    
+
+    onLogin({ name: result.user!.name, email: result.user!.email });
     setIsLoading(false);
   };
 
@@ -63,7 +69,7 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
             className="border-gray-300 focus:border-red-500 focus:ring-red-500"
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
           <Input
@@ -75,16 +81,16 @@ export function Login({ onLogin, onSwitchToRegister }: LoginProps) {
             className="border-gray-300 focus:border-red-500 focus:ring-red-500"
           />
         </div>
-        
-        <Button 
-          type="submit" 
-          variant="campus" 
+
+        <Button
+          type="submit"
+          variant="campus"
           className="w-full"
           disabled={isLoading}
         >
           {isLoading ? 'Signing in...' : 'Sign In'}
         </Button>
-        
+
         <div className="text-center text-sm text-gray-600">
           Don't have an account?{' '}
           <button

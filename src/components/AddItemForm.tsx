@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Camera, Upload, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { CATEGORIES, ItemCategory } from '@/components/ItemCard';
 
 interface AddItemFormProps {
   user: { name: string; email: string };
@@ -16,10 +17,12 @@ interface AddItemFormProps {
 
 export function AddItemForm({ user, onBack }: AddItemFormProps) {
   const [itemType, setItemType] = useState<'lost' | 'found' | ''>('');
+  const [category, setCategory] = useState<ItemCategory | ''>('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
   const [date, setDate] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +43,7 @@ export function AddItemForm({ user, onBack }: AddItemFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!itemType || !title || !description || !location || !date) {
+    if (!itemType || !category || !title || !description || !location || !date || !contactPhone) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields",
@@ -56,7 +59,7 @@ export function AddItemForm({ user, onBack }: AddItemFormProps) {
     
     toast({
       title: "Item Posted Successfully!",
-      description: `Your ${itemType} item has been added to the database.`,
+      description: `Your ${itemType} item has been added to the database in ${category}.`,
     });
     
     setIsLoading(false);
@@ -88,17 +91,33 @@ export function AddItemForm({ user, onBack }: AddItemFormProps) {
               
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="type">Item Type *</Label>
-                    <Select value={itemType} onValueChange={(value: 'lost' | 'found') => setItemType(value)}>
-                      <SelectTrigger className="border-gray-300 focus:border-red-500 focus:ring-red-500">
-                        <SelectValue placeholder="Select if this item is lost or found" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="lost">Lost Item</SelectItem>
-                        <SelectItem value="found">Found Item</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="type">Item Type *</Label>
+                      <Select value={itemType} onValueChange={(value: 'lost' | 'found') => setItemType(value)}>
+                        <SelectTrigger className="border-gray-300 focus:border-red-500 focus:ring-red-500">
+                          <SelectValue placeholder="Lost or Found?" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="lost">Lost Item</SelectItem>
+                          <SelectItem value="found">Found Item</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="category">Category *</Label>
+                      <Select value={category} onValueChange={(value: ItemCategory) => setCategory(value)}>
+                        <SelectTrigger className="border-gray-300 focus:border-red-500 focus:ring-red-500">
+                          <SelectValue placeholder="Select a Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CATEGORIES.map(cat => (
+                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -124,25 +143,39 @@ export function AddItemForm({ user, onBack }: AddItemFormProps) {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location *</Label>
-                    <Input
-                      id="location"
-                      type="text"
-                      placeholder="e.g., Main Library 2nd Floor, Science Building Entrance"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      className="border-gray-300 focus:border-red-500 focus:ring-red-500"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="location">Location *</Label>
+                      <Input
+                        id="location"
+                        type="text"
+                        placeholder="e.g., Main Library"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        className="border-gray-300 focus:border-red-500 focus:ring-red-500"
+                      />
+                    </div>
+  
+                    <div className="space-y-2">
+                      <Label htmlFor="date">Date *</Label>
+                      <Input
+                        id="date"
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        className="border-gray-300 focus:border-red-500 focus:ring-red-500"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="date">Date *</Label>
+                    <Label htmlFor="contactPhone">Contact Phone Number *</Label>
                     <Input
-                      id="date"
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
+                      id="contactPhone"
+                      type="tel"
+                      placeholder="e.g., +1 234-567-8900"
+                      value={contactPhone}
+                      onChange={(e) => setContactPhone(e.target.value)}
                       className="border-gray-300 focus:border-red-500 focus:ring-red-500"
                     />
                   </div>

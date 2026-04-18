@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { registerUser } from '@/lib/auth';
 
 interface RegisterProps {
   onRegister: (user: { name: string; email: string }) => void;
@@ -20,11 +21,11 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name || !email || !password || !confirmPassword) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all fields",
+        description: "Please fill in all fields.",
         variant: "destructive",
       });
       return;
@@ -33,7 +34,7 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
     if (password !== confirmPassword) {
       toast({
         title: "Password Mismatch",
-        description: "Passwords do not match",
+        description: "Passwords do not match.",
         variant: "destructive",
       });
       return;
@@ -42,24 +43,32 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
     if (password.length < 6) {
       toast({
         title: "Weak Password",
-        description: "Password must be at least 6 characters long",
+        description: "Password must be at least 6 characters long.",
         variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
-    
-    // Simulate registration
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    onRegister({ name, email });
-    
+
+    const result = await registerUser(name, email, password);
+
+    if (!result.success) {
+      toast({
+        title: "Registration Failed",
+        description: result.error || "Could not create account.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     toast({
       title: "Account Created!",
-      description: "Welcome to Campus Lost & Found",
+      description: `Welcome to Campus Lost & Found, ${name.split(' ')[0]}!`,
     });
-    
+
+    onRegister({ name: name.trim(), email: email.trim().toLowerCase() });
     setIsLoading(false);
   };
 
@@ -80,11 +89,11 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
             className="border-gray-300 focus:border-red-500 focus:ring-red-500"
           />
         </div>
-        
+
         <div className="space-y-2">
-          <Label htmlFor="email">College Email</Label>
+          <Label htmlFor="reg-email">College Email</Label>
           <Input
-            id="email"
+            id="reg-email"
             type="email"
             placeholder="your.email@college.edu"
             value={email}
@@ -92,19 +101,19 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
             className="border-gray-300 focus:border-red-500 focus:ring-red-500"
           />
         </div>
-        
+
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="reg-password">Password</Label>
           <Input
-            id="password"
+            id="reg-password"
             type="password"
-            placeholder="Create a strong password"
+            placeholder="Create a strong password (min. 6 chars)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="border-gray-300 focus:border-red-500 focus:ring-red-500"
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="confirmPassword">Confirm Password</Label>
           <Input
@@ -116,16 +125,16 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
             className="border-gray-300 focus:border-red-500 focus:ring-red-500"
           />
         </div>
-        
-        <Button 
-          type="submit" 
-          variant="campus" 
+
+        <Button
+          type="submit"
+          variant="campus"
           className="w-full"
           disabled={isLoading}
         >
           {isLoading ? 'Creating Account...' : 'Create Account'}
         </Button>
-        
+
         <div className="text-center text-sm text-gray-600">
           Already have an account?{' '}
           <button
